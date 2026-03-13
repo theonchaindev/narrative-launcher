@@ -59,8 +59,22 @@ export function Nav() {
             })}
           </div>
 
-          {/* Right side: community + wallet */}
+          {/* Right side: profile + community + wallet */}
           <div className="flex items-center gap-2">
+            <Link
+              href="/profile"
+              className={`h-8 w-8 flex items-center justify-center rounded-lg border transition-all ${
+                pathname === '/profile'
+                  ? 'border-accent-green-border bg-accent-green-dim text-accent-green'
+                  : 'border-border bg-surface2 text-text-muted hover:text-text-secondary hover:border-border-hover'
+              }`}
+              title="Profile"
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 20c0-4 3.582-7 8-7s8 3 8 7" strokeLinecap="round" />
+              </svg>
+            </Link>
             <a
               href="https://discord.gg/narrativelauncher"
               target="_blank"
@@ -107,6 +121,7 @@ export function Nav() {
 
         </div>
       </nav>
+
 
       {walletPanelOpen && (
         <WalletManagerPanel onClose={() => setWalletPanelOpen(false)} />
