@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Nav } from '@/components/ui/Nav';
+import { CopyCA } from '@/components/ui/CopyCA';
 
 export const metadata: Metadata = {
   title: "what's the narra — Turn X Posts Into Token Launches",
@@ -23,14 +24,15 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-background text-text-primary antialiased">
+      <body className="min-h-screen bg-background text-text-primary antialiased flex flex-col">
         <Nav />
-        <main className="pt-12">{children}</main>
-        <footer className="border-t border-border mt-24 py-6">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 flex items-center justify-between">
-            <p className="text-[10px] font-mono text-text-muted tracking-wider">
+        <main className="pt-12 flex-1">{children}</main>
+        <footer className="border-t border-border py-5 mt-16">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-4">
+            <p className="text-[10px] font-mono text-text-muted tracking-wider shrink-0">
               WHAT&apos;S THE NARRA · SOLANA
             </p>
+            <CopyCA />
             <div className="flex items-center gap-5">
               <a
                 href="https://x.com/whatsthenarra"
