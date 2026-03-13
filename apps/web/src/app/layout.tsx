@@ -24,10 +24,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-background text-text-primary antialiased flex flex-col">
+      <body className="min-h-screen bg-background text-text-primary antialiased">
         <Nav />
-        <main className="pt-12 flex-1">{children}</main>
-        <footer className="border-t border-border py-5 mt-16">
+        <main className="pt-12 pb-14">{children}</main>
+        <footer className="fixed bottom-0 left-0 right-0 z-30 border-t border-border bg-background/95 backdrop-blur-md py-3">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-4">
             <p className="text-[10px] font-mono text-text-muted tracking-wider shrink-0">
               WHAT&apos;S THE NARRA · SOLANA
