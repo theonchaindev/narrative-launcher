@@ -24,9 +24,10 @@ export function LaunchModal({ narrative, providers, onClose }: LaunchModalProps)
   const [pfpPreview, setPfpPreview] = useState<string | null>(null);
   const [pfpFile, setPfpFile] = useState<File | null>(null);
   const pfpInputRef = useRef<HTMLInputElement>(null);
+  const [tokenTicker, setTokenTicker] = useState(narrative.ticker);
   const [tokenName, setTokenName] = useState(narrative.name);
   const [tokenDescription, setTokenDescription] = useState(
-    `The original $${narrative.ticker} narrative. Originated from X: ${narrative.xPost.canonicalUrl}`,
+    `The original $${tokenTicker || narrative.ticker} narrative. Originated from X: ${narrative.xPost.canonicalUrl}`,
   );
 
   const selectedProvider = providers.find((p) => p.id === selectedProviderId);
@@ -55,7 +56,7 @@ export function LaunchModal({ narrative, providers, onClose }: LaunchModalProps)
           <div>
             <h2 className="font-semibold text-text-primary">{stepTitles[step]}</h2>
             <p className="text-xs text-text-muted mt-0.5">
-              ${narrative.ticker} · Narrative Launcher
+              ${tokenTicker || narrative.ticker} · Narrative Launcher
             </p>
           </div>
           <button
@@ -71,7 +72,7 @@ export function LaunchModal({ narrative, providers, onClose }: LaunchModalProps)
           {step === 'provider' && (
             <div>
               <p className="text-sm text-text-secondary mb-6">
-                Select where you want to launch <span className="font-mono font-bold text-text-primary">${narrative.ticker}</span>
+                Select where you want to launch <span className="font-mono font-bold text-text-primary">${tokenTicker || narrative.ticker}</span>
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
@@ -202,10 +203,15 @@ export function LaunchModal({ narrative, providers, onClose }: LaunchModalProps)
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted font-mono">$</span>
                   <input
-                    value={narrative.ticker}
-                    readOnly
-                    className="w-full h-10 rounded-lg bg-surface/50 border border-border pl-7 pr-3 text-sm text-text-secondary font-mono cursor-not-allowed"
+                    value={tokenTicker}
+                    onChange={(e) => setTokenTicker(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10))}
+                    maxLength={10}
+                    placeholder={narrative.ticker}
+                    className="w-full h-10 rounded-lg bg-surface border border-border pl-7 pr-12 text-sm font-mono text-text-primary focus:outline-none focus:border-accent-green transition-colors uppercase"
                   />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono text-text-muted">
+                    {tokenTicker.length}/10
+                  </span>
                 </div>
               </div>
 
@@ -346,7 +352,7 @@ export function LaunchModal({ narrative, providers, onClose }: LaunchModalProps)
                 )}
                 <div className="flex justify-between text-sm">
                   <span className="text-text-secondary">Token</span>
-                  <span className="font-mono font-bold text-text-primary">${narrative.ticker}</span>
+                  <span className="font-mono font-bold text-text-primary">${tokenTicker || narrative.ticker}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-text-secondary">Provider</span>
@@ -433,7 +439,7 @@ export function LaunchModal({ narrative, providers, onClose }: LaunchModalProps)
               <h3 className="font-semibold text-text-primary mb-2">Waiting for Wallet</h3>
               <p className="text-sm text-text-secondary">
                 Approve the transaction in your wallet to launch{' '}
-                <span className="font-mono font-bold">${narrative.ticker}</span>
+                <span className="font-mono font-bold">${tokenTicker || narrative.ticker}</span>
               </p>
             </div>
           )}
@@ -455,7 +461,7 @@ export function LaunchModal({ narrative, providers, onClose }: LaunchModalProps)
             <div className="py-8 text-center">
               <div className="text-6xl mb-4">🚀</div>
               <h3 className="text-xl font-bold text-text-primary mb-2">
-                ${narrative.ticker} is live!
+                ${tokenTicker || narrative.ticker} is live!
               </h3>
               <p className="text-sm text-text-secondary mb-6">
                 Your token has launched on {selectedProvider?.name}.
