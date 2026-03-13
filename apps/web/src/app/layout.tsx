@@ -25,24 +25,25 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className="min-h-screen bg-background text-text-primary antialiased">
         <Nav />
-        <main className="pt-16">{children}</main>
-        <footer className="border-t border-border mt-24 py-12 text-center text-text-muted text-sm">
-          <p>Narrative Launcher · Built on Solana · Multi-provider token launch</p>
-          <div className="flex items-center justify-center gap-6 mt-4">
-            <a
-              href="https://x.com/NarrativeLaunch"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-text-secondary transition-colors"
-            >
-              X / Twitter
-            </a>
-            <a href="/docs" className="hover:text-text-secondary transition-colors">
-              Docs
-            </a>
-            <a href="/spec" className="hover:text-text-secondary transition-colors">
-              Spec
-            </a>
+        <main className="pt-12">{children}</main>
+        <footer className="border-t border-border mt-24 py-6">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 flex items-center justify-between">
+            <p className="text-[10px] font-mono text-text-muted tracking-wider">
+              NARRATIVE_LAUNCHER · SOLANA
+            </p>
+            <div className="flex items-center gap-5">
+              <a
+                href="https://x.com/NarrativeLaunch"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[10px] font-mono text-text-muted hover:text-text-secondary transition-colors tracking-wider"
+              >
+                X
+              </a>
+              <a href="/docs" className="text-[10px] font-mono text-text-muted hover:text-text-secondary transition-colors tracking-wider">
+                DOCS
+              </a>
+            </div>
           </div>
         </footer>
       </body>

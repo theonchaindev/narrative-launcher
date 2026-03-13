@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import type { ProviderInfo, NarrativeListItem } from '@narrative-launcher/shared-types';
 import { ProviderCard } from '@/components/provider/ProviderCard';
 import { ProviderComparison } from '@/components/provider/ProviderComparison';
@@ -21,6 +21,9 @@ export function LaunchModal({ narrative, providers, onClose }: LaunchModalProps)
   const [devBuyEnabled, setDevBuyEnabled] = useState(false);
   const [devBuyAmount, setDevBuyAmount] = useState('0.5');
   const [devFeeStrategy, setDevFeeStrategy] = useState<'hold' | 'lp'>('hold');
+  const [pfpPreview, setPfpPreview] = useState<string | null>(null);
+  const [pfpFile, setPfpFile] = useState<File | null>(null);
+  const pfpInputRef = useRef<HTMLInputElement>(null);
   const [tokenName, setTokenName] = useState(narrative.name);
   const [tokenDescription, setTokenDescription] = useState(
     `The original $${narrative.ticker} narrative. Originated from X: ${narrative.xPost.canonicalUrl}`,
@@ -117,6 +120,72 @@ export function LaunchModal({ narrative, providers, onClose }: LaunchModalProps)
                 <span className="text-sm text-text-secondary">
                   Launching via <span className="text-text-primary font-medium">{selectedProvider?.name}</span>
                 </span>
+              </div>
+
+              {/* PFP Upload */}
+              <div>
+                <label className="block text-xs font-mono font-medium text-text-secondary mb-2 tracking-wider uppercase">
+                  Token Image (PFP)
+                </label>
+                <div className="flex items-center gap-4">
+                  {/* Preview or placeholder */}
+                  <div
+                    onClick={() => pfpInputRef.current?.click()}
+                    className={`w-20 h-20 rounded-xl border-2 border-dashed flex items-center justify-center flex-shrink-0 cursor-pointer transition-all overflow-hidden ${
+                      pfpPreview
+                        ? 'border-accent-green-border'
+                        : 'border-border hover:border-accent-green-border hover:bg-accent-green-dim'
+                    }`}
+                  >
+                    {pfpPreview ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={pfpPreview} alt="Token PFP" className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="text-center">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-text-muted mx-auto mb-1">
+                          <rect x="3" y="3" width="18" height="18" rx="3" />
+                          <circle cx="8.5" cy="8.5" r="1.5" />
+                          <path d="M21 15l-5-5L5 21" />
+                        </svg>
+                        <span className="text-[9px] font-mono text-text-muted">UPLOAD</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex-1">
+                    <button
+                      onClick={() => pfpInputRef.current?.click()}
+                      className="h-9 px-4 rounded-lg border border-border bg-surface2 text-xs font-mono text-text-secondary hover:border-accent-green-border hover:text-accent-green transition-all"
+                    >
+                      {pfpFile ? pfpFile.name : 'Choose image'}
+                    </button>
+                    <p className="text-[10px] text-text-muted font-mono mt-1.5">
+                      PNG, JPG, GIF, WEBP · max {selectedProvider ? Math.round((selectedProvider.capabilities.maxImageSizeBytes ?? 5242880) / 1024 / 1024) : 5}MB
+                    </p>
+                    {pfpFile && (
+                      <button
+                        onClick={() => { setPfpFile(null); setPfpPreview(null); }}
+                        className="text-[10px] font-mono text-accent-red hover:underline mt-1"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                </div>
+                <input
+                  ref={pfpInputRef}
+                  type="file"
+                  accept="image/png,image/jpeg,image/gif,image/webp"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    setPfpFile(file);
+                    const reader = new FileReader();
+                    reader.onload = (ev) => setPfpPreview(ev.target?.result as string);
+                    reader.readAsDataURL(file);
+                  }}
+                />
               </div>
 
               <div>
@@ -268,6 +337,13 @@ export function LaunchModal({ narrative, providers, onClose }: LaunchModalProps)
           {step === 'review' && (
             <div className="space-y-4">
               <div className="p-4 rounded-xl bg-surface border border-border space-y-3">
+                {pfpPreview && (
+                  <div className="flex items-center gap-3 pb-3 border-b border-border">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={pfpPreview} alt="Token PFP" className="w-10 h-10 rounded-lg object-cover border border-border" />
+                    <span className="text-xs font-mono text-text-muted">{pfpFile?.name}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-sm">
                   <span className="text-text-secondary">Token</span>
                   <span className="font-mono font-bold text-text-primary">${narrative.ticker}</span>

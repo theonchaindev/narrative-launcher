@@ -16,23 +16,22 @@ export function Nav() {
   useEffect(() => { setMounted(true); }, []);
 
   const navLinks = [
-    { href: '/', label: 'Feed' },
-    { href: '/feed', label: 'Live Feed', live: true },
-    { href: '/explore', label: 'Explore' },
+    { href: '/', label: 'FEED' },
+    { href: '/feed', label: 'LIVE', live: true },
+    { href: '/explore', label: 'EXPLORE' },
   ];
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-40 h-14 border-b border-border bg-background/90 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto h-full flex items-center justify-between px-4 sm:px-6">
+      <nav className="fixed top-0 left-0 right-0 z-40 h-12 border-b border-border bg-background/90 backdrop-blur-md">
+        <div className="max-w-5xl mx-auto h-full flex items-center justify-between px-4 sm:px-6">
 
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 shrink-0">
-            <div className="w-7 h-7 rounded-md bg-accent-green flex items-center justify-center text-black font-bold text-[10px] font-mono tracking-tight">
-              NL
-            </div>
-            <span className="font-semibold text-text-primary text-sm hidden sm:block tracking-tight">
-              Narrative<span className="text-accent-green">.</span>Launch
+            <span className="font-mono font-bold text-sm text-accent-green tracking-widest">NL</span>
+            <span className="text-border hidden sm:block font-mono">·</span>
+            <span className="font-mono text-xs text-text-muted hidden sm:block tracking-wide">
+              narrative.launch
             </span>
           </Link>
 

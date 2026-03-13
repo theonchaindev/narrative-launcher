@@ -28,58 +28,72 @@ export default function ExplorePage() {
   });
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
+
+      {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-text-primary mb-2">Explore Narratives</h1>
-        <p className="text-text-secondary">Browse all detected token narratives from X</p>
+        <p className="text-[10px] font-mono text-text-muted tracking-widest uppercase mb-1">Explore</p>
+        <h1 className="text-2xl font-bold font-mono text-text-primary">Narratives</h1>
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-8">
+      {/* Filter bar */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-6 pb-6 border-b border-border">
+
         {/* Search */}
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search by ticker or text..."
-          className="h-10 rounded-lg bg-surface border border-border px-3 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-purple w-full sm:w-64 transition-colors"
-        />
+        <div className="relative flex-1 max-w-xs">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-accent-green font-mono text-xs">›</span>
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="search ticker or text..."
+            className="w-full h-9 rounded-lg bg-surface border border-border pl-7 pr-3 text-xs font-mono text-text-primary placeholder:text-text-muted focus:outline-none input-green transition-colors"
+          />
+        </div>
 
         {/* Status filter */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           {(['all', 'active', 'qualified', 'launched'] as FilterStatus[]).map((s) => (
             <button
               key={s}
               onClick={() => setFilterStatus(s)}
-              className={`h-8 px-3 rounded-lg text-xs font-medium transition-colors capitalize ${
+              className={`h-7 px-3 rounded text-[11px] font-mono transition-all ${
                 filterStatus === s
-                  ? 'bg-accent-purple text-white'
-                  : 'bg-surface border border-border text-text-secondary hover:text-text-primary'
+                  ? 'bg-accent-green-dim border border-accent-green-border text-accent-green'
+                  : 'border border-border text-text-muted hover:text-text-secondary hover:border-border-hover'
               }`}
             >
-              {s}
+              {s.toUpperCase()}
             </button>
           ))}
         </div>
 
         {/* Sort */}
         <div className="ml-auto flex items-center gap-2">
-          <span className="text-xs text-text-muted">Sort:</span>
-          {(['score', 'recent', 'engagement'] as SortKey[]).map((s) => (
-            <button
-              key={s}
-              onClick={() => setSort(s)}
-              className={`h-8 px-3 rounded-lg text-xs font-medium transition-colors capitalize ${
-                sort === s
-                  ? 'bg-surface border border-accent-purple text-accent-purple'
-                  : 'bg-surface border border-border text-text-secondary hover:text-text-primary'
-              }`}
-            >
-              {s}
-            </button>
-          ))}
+          <span className="text-[10px] font-mono text-text-muted tracking-wider">SORT</span>
+          <div className="flex items-center gap-1">
+            {(['score', 'recent', 'engagement'] as SortKey[]).map((s) => (
+              <button
+                key={s}
+                onClick={() => setSort(s)}
+                className={`h-7 px-3 rounded text-[11px] font-mono transition-all ${
+                  sort === s
+                    ? 'bg-accent-green-dim border border-accent-green-border text-accent-green'
+                    : 'border border-border text-text-muted hover:text-text-secondary hover:border-border-hover'
+                }`}
+              >
+                {s.toUpperCase()}
+              </button>
+            ))}
+          </div>
         </div>
+
       </div>
+
+      {/* Results count */}
+      <p className="text-[10px] font-mono text-text-muted mb-4 tracking-wider">
+        {sorted.length} RESULT{sorted.length !== 1 ? 'S' : ''}
+      </p>
 
       <NarrativeFeed
         narratives={sorted}
