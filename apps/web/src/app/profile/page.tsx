@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useDevWallets, exportAsBase58, exportAsArray } from '@/lib/devWallet';
@@ -777,12 +778,13 @@ function Modal({ children, onClose }: { children: React.ReactNode; onClose: () =
     return () => document.removeEventListener('keydown', handler);
   }, [onClose]);
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+  return createPortal(
+    <div className="fixed inset-0 flex items-center justify-center p-4" style={{ zIndex: 9999 }}>
       <div className="absolute inset-0 bg-black/70" onClick={onClose} />
       <div className="relative z-10 w-full max-w-md bg-surface border border-border rounded-xl p-6 animate-scale-in">
         {children}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
