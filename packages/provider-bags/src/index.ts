@@ -1,0 +1,1 @@
+export { BagsProvider } from './BagsProvider';
