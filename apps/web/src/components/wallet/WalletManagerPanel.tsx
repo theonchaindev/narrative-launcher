@@ -136,6 +136,7 @@ export function WalletManagerPanel({ onClose }: WalletManagerPanelProps) {
               wallet={wallet}
               isActive={wallet.isActive}
               isRenaming={renamingId === wallet.id}
+              isConfirmingDelete={deleteConfirm === wallet.id}
               renameValue={renameValue}
               onRenameChange={setRenameValue}
               onStartRename={() => startRename(wallet)}
@@ -146,6 +147,8 @@ export function WalletManagerPanel({ onClose }: WalletManagerPanelProps) {
                 startExport(wallet);
               }}
               onDelete={() => setDeleteConfirm(wallet.id)}
+              onConfirmDelete={() => { deleteWallet(wallet.id); setDeleteConfirm(null); }}
+              onCancelDelete={() => setDeleteConfirm(null)}
             />
           ))}
         </div>
@@ -243,33 +246,6 @@ export function WalletManagerPanel({ onClose }: WalletManagerPanelProps) {
         </div>
       )}
 
-      {/* Delete confirm */}
-      {deleteConfirm && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/70" onClick={() => setDeleteConfirm(null)} />
-          <div className="relative w-full max-w-sm bg-surface border border-border rounded-2xl p-6 animate-scale-in">
-            <h3 className="font-semibold text-text-primary mb-2">Delete wallet?</h3>
-            <p className="text-sm text-text-secondary mb-1">
-              <strong className="text-text-primary">{wallets.find((w) => w.id === deleteConfirm)?.name}</strong>
-            </p>
-            <p className="text-xs text-accent-red mb-6">
-              This cannot be undone. Make sure you have a backup of the private key.
-            </p>
-            <div className="flex gap-3">
-              <Button variant="secondary" className="flex-1" onClick={() => setDeleteConfirm(null)}>
-                Cancel
-              </Button>
-              <Button
-                variant="danger"
-                className="flex-1"
-                onClick={() => { deleteWallet(deleteConfirm); setDeleteConfirm(null); }}
-              >
-                Delete wallet
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }
@@ -280,6 +256,7 @@ interface WalletRowProps {
   wallet: DevWallet;
   isActive: boolean;
   isRenaming: boolean;
+  isConfirmingDelete: boolean;
   renameValue: string;
   onRenameChange: (v: string) => void;
   onStartRename: () => void;
@@ -287,11 +264,13 @@ interface WalletRowProps {
   onSetActive: () => void;
   onExport: () => void;
   onDelete: () => void;
+  onConfirmDelete: () => void;
+  onCancelDelete: () => void;
 }
 
 function WalletRow({
-  wallet, isActive, isRenaming, renameValue, onRenameChange,
-  onStartRename, onCommitRename, onSetActive, onExport, onDelete,
+  wallet, isActive, isRenaming, isConfirmingDelete, renameValue, onRenameChange,
+  onStartRename, onCommitRename, onSetActive, onExport, onDelete, onConfirmDelete, onCancelDelete,
 }: WalletRowProps) {
   const renameInputRef = useRef<HTMLInputElement>(null);
 
@@ -361,13 +340,32 @@ function WalletRow({
           Export
         </button>
         <button
-          onClick={onDelete}
-          className="h-7 px-2.5 rounded-lg bg-accent-red/5 border border-accent-red/20 text-accent-red hover:bg-accent-red/10 text-[11px] font-mono transition-colors"
-          title="Delete wallet"
+          onClick={isConfirmingDelete ? onCancelDelete : onDelete}
+          className={`h-7 px-2.5 rounded-lg text-[11px] font-mono transition-colors ${
+            isConfirmingDelete
+              ? 'bg-surface border border-border text-text-muted'
+              : 'bg-accent-red/5 border border-accent-red/20 text-accent-red hover:bg-accent-red/10'
+          }`}
+          title={isConfirmingDelete ? 'Cancel' : 'Delete wallet'}
         >
           ✕
         </button>
       </div>
+
+      {/* Inline delete confirmation */}
+      {isConfirmingDelete && (
+        <div className="mt-3 flex items-center justify-between pt-3 border-t border-accent-red/20">
+          <p className="text-[10px] font-mono text-accent-red">
+            Delete <span className="font-bold">{wallet.name}</span>? Cannot be undone.
+          </p>
+          <button
+            onClick={onConfirmDelete}
+            className="h-6 px-3 rounded bg-accent-red/10 border border-accent-red/30 text-accent-red hover:bg-accent-red/20 text-[10px] font-mono font-bold transition-colors ml-3 shrink-0"
+          >
+            Confirm
+          </button>
+        </div>
+      )}
     </div>
   );
 }

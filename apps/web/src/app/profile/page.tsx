@@ -308,7 +308,7 @@ function WalletsSection() {
       ) : (
         <div className="border border-border rounded-lg bg-surface overflow-hidden">
           {/* Table header */}
-          <div className="grid grid-cols-[1fr_140px_80px_96px] gap-0 border-b border-border bg-surface2 px-4 py-2">
+          <div className="grid grid-cols-[1fr_140px_80px_120px] gap-0 border-b border-border bg-surface2 px-4 py-2">
             {['WALLET', 'ADDRESS', 'BALANCE', 'ACTIONS'].map((h) => (
               <span key={h} className="text-[10px] font-mono text-text-muted tracking-widest">{h}</span>
             ))}
@@ -443,7 +443,7 @@ function WalletTableRow({
 
   return (
     <div>
-      <div className={`grid grid-cols-[1fr_140px_80px_96px] gap-0 items-center px-4 py-3 transition-colors ${isActive ? 'bg-accent-green-dim' : 'hover:bg-surface2'}`}>
+      <div className={`grid grid-cols-[1fr_140px_80px_120px] gap-0 items-center px-4 py-3 transition-colors ${isActive ? 'bg-accent-green-dim' : 'hover:bg-surface2'}`}>
         {/* Name */}
         <div className="flex items-center gap-2 min-w-0">
           {isActive && <span className="live-dot shrink-0" />}
