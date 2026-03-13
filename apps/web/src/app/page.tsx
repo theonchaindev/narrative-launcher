@@ -186,7 +186,7 @@ export default function HomePage() {
               {
                 n: '01',
                 title: 'Detect',
-                desc: 'A $TOKEN mention gets traction on X — Narrative Launcher picks it up, or paste the URL yourself.',
+                desc: "A $TOKEN mention gets traction on X — what's the narra picks it up, or paste the URL yourself.",
                 icon: (
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                     <circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" strokeLinecap="round" />

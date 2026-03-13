@@ -56,7 +56,7 @@ export function LaunchModal({ narrative, providers, onClose }: LaunchModalProps)
           <div>
             <h2 className="font-semibold text-text-primary">{stepTitles[step]}</h2>
             <p className="text-xs text-text-muted mt-0.5">
-              ${tokenTicker || narrative.ticker} · Narrative Launcher
+              ${tokenTicker || narrative.ticker} · what&apos;s the narra
             </p>
           </div>
           <button
@@ -323,7 +323,7 @@ export function LaunchModal({ narrative, providers, onClose }: LaunchModalProps)
                   <p className="text-sm font-medium text-accent-green mb-1">Fee Share Enabled</p>
                   <p className="text-xs text-text-secondary">
                     You will receive 0.5% of all trading fees as the token creator.
-                    Narrative Launcher takes 0.1%.
+                    what&apos;s the narra takes 0.1%.
                   </p>
                 </div>
               )}

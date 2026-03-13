@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { useDevWallets } from '@/lib/devWallet';
@@ -29,10 +30,9 @@ export function Nav() {
 
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 shrink-0">
-            <span className="font-mono font-bold text-sm text-accent-green tracking-widest">NL</span>
-            <span className="text-border hidden sm:block font-mono">·</span>
+            <Image src="/logo.png" alt="what's the narra" width={28} height={28} className="rounded-sm" />
             <span className="font-mono text-xs text-text-muted hidden sm:block tracking-wide">
-              narrative.launch
+              what&apos;s the narra
             </span>
           </Link>
 

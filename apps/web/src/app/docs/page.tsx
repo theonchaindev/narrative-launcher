@@ -7,7 +7,7 @@ const sections = [
     content: [
       {
         type: 'text',
-        value: 'Narrative Launcher turns X posts into launchable token narratives on Solana. When a ticker like $TOKEN gets mentioned in a post with strong engagement, it becomes a candidate for launch. You can monitor accounts in real time, configure token metadata, pick a launch provider, and sign a single transaction.',
+        value: "what's the narra turns X posts into launchable token narratives on Solana. When a ticker like $TOKEN gets mentioned in a post with strong engagement, it becomes a candidate for launch. You can monitor accounts in real time, configure token metadata, pick a launch provider, and sign a single transaction.",
       },
       {
         type: 'kv',
@@ -279,7 +279,7 @@ export default function DocsPage() {
           {/* Header */}
           <div className="mb-10">
             <p className="text-[10px] font-mono text-text-muted tracking-widest uppercase mb-1">Documentation</p>
-            <h1 className="text-2xl font-bold font-mono text-text-primary mb-3">Narrative Launcher</h1>
+            <h1 className="text-2xl font-bold font-mono text-text-primary mb-3">what&apos;s the narra</h1>
             <p className="text-sm text-text-secondary">
               Everything you need to launch tokens from X posts on Solana.
             </p>
