@@ -235,9 +235,9 @@ export function LaunchModal({ narrative, providers, onClose }: LaunchModalProps)
                     </div>
                     <button
                       onClick={() => setDevBuyEnabled(!devBuyEnabled)}
-                      className={`relative w-10 h-5 rounded-full transition-colors ${devBuyEnabled ? 'bg-accent-green' : 'bg-surface border border-border'}`}
+                      className={`relative w-10 h-5 rounded-full transition-colors ${devBuyEnabled ? 'bg-accent-green' : 'bg-surface2'}`}
                     >
-                      <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform ${devBuyEnabled ? 'translate-x-5' : 'translate-x-0.5'}`} />
+                      <span className={`absolute top-0.5 w-4 h-4 rounded-full transition-all ${devBuyEnabled ? 'bg-black translate-x-5' : 'bg-text-muted translate-x-0.5'}`} />
                     </button>
                   </div>
                   {devBuyEnabled && (
