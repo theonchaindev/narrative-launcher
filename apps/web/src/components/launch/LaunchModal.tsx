@@ -20,6 +20,7 @@ export function LaunchModal({ narrative, providers, onClose }: LaunchModalProps)
   const [showComparison, setShowComparison] = useState(false);
   const [devBuyEnabled, setDevBuyEnabled] = useState(false);
   const [devBuyAmount, setDevBuyAmount] = useState('0.5');
+  const [devFeeStrategy, setDevFeeStrategy] = useState<'hold' | 'lp'>('hold');
   const [tokenName, setTokenName] = useState(narrative.name);
   const [tokenDescription, setTokenDescription] = useState(
     `The original $${narrative.ticker} narrative. Originated from X: ${narrative.xPost.canonicalUrl}`,
@@ -110,7 +111,7 @@ export function LaunchModal({ narrative, providers, onClose }: LaunchModalProps)
           {step === 'configure' && (
             <div className="space-y-5">
               <div className="p-3 rounded-lg bg-surface border border-border flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-accent-purple/10 flex items-center justify-center text-accent-purple text-xs font-bold">
+                <div className="w-8 h-8 rounded-full bg-accent-green-dim flex items-center justify-center text-accent-green text-xs font-mono font-bold">
                   {selectedProvider?.name.slice(0, 2)}
                 </div>
                 <span className="text-sm text-text-secondary">
@@ -123,7 +124,7 @@ export function LaunchModal({ narrative, providers, onClose }: LaunchModalProps)
                 <input
                   value={tokenName}
                   onChange={(e) => setTokenName(e.target.value)}
-                  className="w-full h-10 rounded-lg bg-surface border border-border px-3 text-sm text-text-primary focus:outline-none focus:border-accent-purple transition-colors"
+                  className="w-full h-10 rounded-lg bg-surface border border-border px-3 text-sm text-text-primary focus:outline-none focus:border-accent-green transition-colors"
                 />
               </div>
 
@@ -145,7 +146,7 @@ export function LaunchModal({ narrative, providers, onClose }: LaunchModalProps)
                   value={tokenDescription}
                   onChange={(e) => setTokenDescription(e.target.value)}
                   rows={3}
-                  className="w-full rounded-lg bg-surface border border-border px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-purple transition-colors resize-none"
+                  className="w-full rounded-lg bg-surface border border-border px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-green transition-colors resize-none"
                 />
               </div>
 
@@ -159,7 +160,7 @@ export function LaunchModal({ narrative, providers, onClose }: LaunchModalProps)
                     </div>
                     <button
                       onClick={() => setDevBuyEnabled(!devBuyEnabled)}
-                      className={`relative w-10 h-5 rounded-full transition-colors ${devBuyEnabled ? 'bg-accent-purple' : 'bg-surface border border-border'}`}
+                      className={`relative w-10 h-5 rounded-full transition-colors ${devBuyEnabled ? 'bg-accent-green' : 'bg-surface border border-border'}`}
                     >
                       <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform ${devBuyEnabled ? 'translate-x-5' : 'translate-x-0.5'}`} />
                     </button>
@@ -173,11 +174,71 @@ export function LaunchModal({ narrative, providers, onClose }: LaunchModalProps)
                         step="0.1"
                         min="0.1"
                         max="85"
-                        className="flex-1 h-9 rounded-lg bg-background border border-border px-3 text-sm font-mono text-text-primary focus:outline-none focus:border-accent-purple"
+                        className="flex-1 h-9 rounded-lg bg-background border border-border px-3 text-sm font-mono text-text-primary focus:outline-none focus:border-accent-green"
                       />
                       <span className="text-sm text-text-secondary">SOL</span>
                     </div>
                   )}
+                </div>
+              )}
+
+              {/* Dev fee strategy (pump.fun only) */}
+              {selectedProvider?.capabilities.supportsDevBuy && (
+                <div className="p-4 rounded-xl border border-border bg-surface">
+                  <p className="text-sm font-medium text-text-primary mb-1">Dev Fee Strategy</p>
+                  <p className="text-xs text-text-muted mb-3">What happens when this token collects dev fees</p>
+                  <div className="space-y-2">
+                    {/* Hold option */}
+                    <button
+                      onClick={() => setDevFeeStrategy('hold')}
+                      className={`w-full flex items-start gap-3 p-3 rounded-lg border transition-all ${
+                        devFeeStrategy === 'hold'
+                          ? 'border-accent-green-border bg-accent-green-dim'
+                          : 'border-border bg-background hover:border-border-hover'
+                      }`}
+                    >
+                      <span className={`mt-0.5 w-3.5 h-3.5 rounded-full border-2 flex-shrink-0 transition-colors ${
+                        devFeeStrategy === 'hold' ? 'border-accent-green bg-accent-green' : 'border-border'
+                      }`} />
+                      <div className="text-left">
+                        <p className={`text-xs font-mono font-semibold ${devFeeStrategy === 'hold' ? 'text-accent-green' : 'text-text-primary'}`}>
+                          Hold in dev wallet
+                        </p>
+                        <p className="text-[10px] text-text-muted mt-0.5">Fees accumulate in your active dev wallet</p>
+                      </div>
+                    </button>
+                    {/* Auto-LP option */}
+                    <button
+                      onClick={() => setDevFeeStrategy('lp')}
+                      className={`w-full flex items-start gap-3 p-3 rounded-lg border transition-all ${
+                        devFeeStrategy === 'lp'
+                          ? 'border-accent-green-border bg-accent-green-dim'
+                          : 'border-border bg-background hover:border-border-hover'
+                      }`}
+                    >
+                      <span className={`mt-0.5 w-3.5 h-3.5 rounded-full border-2 flex-shrink-0 transition-colors ${
+                        devFeeStrategy === 'lp' ? 'border-accent-green bg-accent-green' : 'border-border'
+                      }`} />
+                      <div className="text-left flex-1">
+                        <p className={`text-xs font-mono font-semibold ${devFeeStrategy === 'lp' ? 'text-accent-green' : 'text-text-primary'}`}>
+                          Auto-LP: Add to liquidity pool
+                        </p>
+                        <p className="text-[10px] text-text-muted mt-0.5">
+                          When this token graduates, dev fees are deposited into a Raydium LP
+                        </p>
+                        {devFeeStrategy === 'lp' && (
+                          <div className="mt-2 flex items-center gap-2">
+                            <span className="text-[10px] font-mono text-accent-green">
+                              Est. LP contribution: ~{devBuyEnabled ? (parseFloat(devBuyAmount) * 0.5).toFixed(2) : '0.25'} SOL
+                            </span>
+                            <span className="text-[9px] text-text-muted bg-surface2 border border-border px-1.5 py-0.5 rounded font-mono">
+                              TODO: Wire LP API
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </button>
+                  </div>
                 </div>
               )}
 
@@ -229,6 +290,14 @@ export function LaunchModal({ narrative, providers, onClose }: LaunchModalProps)
                     <span className="font-mono text-text-primary">{devBuyAmount} SOL</span>
                   </div>
                 )}
+                {selectedProvider?.capabilities.supportsDevBuy && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-text-secondary">Fee strategy</span>
+                    <span className={`font-mono text-xs ${devFeeStrategy === 'lp' ? 'text-accent-green' : 'text-text-primary'}`}>
+                      {devFeeStrategy === 'lp' ? 'Auto-LP (Raydium)' : 'Hold in wallet'}
+                    </span>
+                  </div>
+                )}
                 <div className="border-t border-border pt-3 flex justify-between text-sm font-semibold">
                   <span className="text-text-primary">Total</span>
                   <span className="font-mono text-text-primary">
@@ -253,7 +322,7 @@ export function LaunchModal({ narrative, providers, onClose }: LaunchModalProps)
                     href={narrative.xPost.canonicalUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-accent-purple hover:underline truncate block mt-1"
+                    className="text-accent-green hover:underline truncate block mt-1"
                   >
                     {narrative.xPost.canonicalUrl}
                   </a>
@@ -284,7 +353,7 @@ export function LaunchModal({ narrative, providers, onClose }: LaunchModalProps)
           {/* Step: Signing */}
           {step === 'signing' && (
             <div className="py-12 text-center">
-              <div className="w-16 h-16 rounded-full border-2 border-accent-purple border-t-transparent animate-spin mx-auto mb-6" />
+              <div className="w-16 h-16 rounded-full border-2 border-accent-green border-t-transparent animate-spin mx-auto mb-6" />
               <h3 className="font-semibold text-text-primary mb-2">Waiting for Wallet</h3>
               <p className="text-sm text-text-secondary">
                 Approve the transaction in your wallet to launch{' '}
@@ -334,7 +403,7 @@ export function LaunchModal({ narrative, providers, onClose }: LaunchModalProps)
                 <Button className="flex-1">View token page →</Button>
               </div>
 
-              <button className="mt-4 text-sm text-accent-purple hover:underline">
+              <button className="mt-4 text-sm text-accent-green hover:underline">
                 Share on X 𝕏
               </button>
             </div>

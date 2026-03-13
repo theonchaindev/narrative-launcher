@@ -14,7 +14,6 @@ interface ProviderCardProps {
 export function ProviderCard({ provider, selected, onSelect, disabled }: ProviderCardProps) {
   const isUnavailable =
     provider.health.status === 'unavailable' || provider.health.status === 'disabled';
-
   const effectivelyDisabled = disabled || isUnavailable;
 
   return (
@@ -23,67 +22,66 @@ export function ProviderCard({ provider, selected, onSelect, disabled }: Provide
       disabled={effectivelyDisabled}
       className={cn(
         'relative w-full text-left p-4 rounded-xl border transition-all duration-150',
-        'focus-visible:ring-2 focus-visible:ring-accent-purple focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+        'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent-green',
         effectivelyDisabled
-          ? 'opacity-50 cursor-not-allowed border-border bg-surface'
-          : 'cursor-pointer hover:border-accent-purple/50 bg-surface hover:bg-surface/80',
+          ? 'opacity-40 cursor-not-allowed border-border bg-surface'
+          : 'cursor-pointer bg-surface',
         selected
-          ? 'border-accent-purple bg-accent-purple/5 ring-1 ring-accent-purple'
+          ? 'border-accent-green-border bg-accent-green-dim glow-green-sm'
           : 'border-border',
+        !effectivelyDisabled && !selected && 'card-hover card-hover-green',
       )}
     >
-      {/* Provider header */}
       <div className="flex items-start justify-between gap-2 mb-3">
         <div>
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-text-primary">{provider.name}</span>
+            <span className="font-semibold text-text-primary text-sm">{provider.name}</span>
             {provider.isExperimental && (
-              <span className="text-xs px-1.5 py-0.5 rounded bg-accent-purple/10 text-accent-purple">
-                Beta
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-accent-green-dim text-accent-green border border-accent-green-border font-mono">
+                BETA
               </span>
             )}
           </div>
-          <ProviderStatusDot status={provider.health.status} showLabel />
+          <div className="mt-0.5">
+            <ProviderStatusDot status={provider.health.status} showLabel />
+          </div>
         </div>
         {selected && (
-          <span className="w-5 h-5 rounded-full bg-accent-purple flex items-center justify-center flex-shrink-0">
-            <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-              <path d="M1 4l2.5 3L9 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          <span className="w-4 h-4 rounded-full bg-accent-green flex items-center justify-center flex-shrink-0">
+            <svg width="8" height="6" viewBox="0 0 10 8" fill="none">
+              <path d="M1 4l2.5 3L9 1" stroke="black" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </span>
         )}
       </div>
 
-      {/* Fee */}
       <div className="mb-3">
-        <span className="text-lg font-mono font-bold text-text-primary">
+        <span className={cn('text-base font-mono font-bold tabular-nums', selected ? 'text-accent-green text-glow-green' : 'text-text-primary')}>
           ~{provider.capabilities.launchFeeSOL} SOL
         </span>
-        <span className="text-xs text-text-muted ml-1">launch fee</span>
+        <span className="text-[10px] text-text-muted ml-1 font-mono">launch</span>
       </div>
 
-      {/* Capability badges */}
       <div className="flex flex-wrap gap-1">
         {provider.capabilities.supportsDevBuy && (
-          <span className="text-xs px-2 py-0.5 rounded-full bg-surface border border-border text-text-secondary">
-            Dev buy
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-surface2 border border-border text-text-muted font-mono tracking-wider">
+            DEV BUY
           </span>
         )}
         {provider.capabilities.supportsFeeShare && (
-          <span className="text-xs px-2 py-0.5 rounded-full bg-accent-green/5 border border-accent-green/20 text-accent-green">
-            Fee share
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-accent-green-dim border border-accent-green-border text-accent-green font-mono tracking-wider">
+            FEE SHARE
           </span>
         )}
         {provider.capabilities.featureFlags.raydiumLaunchLab && (
-          <span className="text-xs px-2 py-0.5 rounded-full bg-surface border border-border text-text-secondary">
-            Raydium LP
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-surface2 border border-border text-text-muted font-mono tracking-wider">
+            RAY LP
           </span>
         )}
       </div>
 
-      {/* Unavailable overlay message */}
       {isUnavailable && provider.health.degradedReason && (
-        <p className="mt-2 text-xs text-text-muted">{provider.health.degradedReason}</p>
+        <p className="mt-2 text-[10px] text-text-muted font-mono leading-relaxed">{provider.health.degradedReason}</p>
       )}
     </button>
   );

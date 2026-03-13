@@ -6,28 +6,21 @@ interface ProviderStatusDotProps {
   showLabel?: boolean;
 }
 
-const STATUS_CONFIG: Record<ProviderStatus, { color: string; label: string; pulse: boolean }> = {
-  healthy: { color: 'bg-accent-green', label: 'Live', pulse: false },
-  degraded: { color: 'bg-accent-yellow', label: 'Degraded', pulse: true },
-  unavailable: { color: 'bg-accent-red', label: 'Down', pulse: false },
-  disabled: { color: 'bg-text-muted', label: 'Disabled', pulse: false },
-  experimental: { color: 'bg-accent-purple', label: 'Beta', pulse: false },
+const STATUS_CONFIG: Record<ProviderStatus, { dotClass: string; label: string }> = {
+  healthy:      { dotClass: 'bg-accent-green shadow-green-sm',  label: 'Live' },
+  degraded:     { dotClass: 'bg-accent-yellow status-pulse',    label: 'Degraded' },
+  unavailable:  { dotClass: 'bg-accent-red',                    label: 'Down' },
+  disabled:     { dotClass: 'bg-text-muted',                    label: 'Disabled' },
+  experimental: { dotClass: 'bg-accent-green status-pulse',     label: 'Beta' },
 };
 
 export function ProviderStatusDot({ status, showLabel = false }: ProviderStatusDotProps) {
-  const config = STATUS_CONFIG[status];
-
+  const { dotClass, label } = STATUS_CONFIG[status];
   return (
     <span className="inline-flex items-center gap-1.5">
-      <span
-        className={cn(
-          'w-2 h-2 rounded-full flex-shrink-0',
-          config.color,
-          config.pulse && 'status-pulse',
-        )}
-      />
+      <span className={cn('w-1.5 h-1.5 rounded-full flex-shrink-0', dotClass)} />
       {showLabel && (
-        <span className="text-xs text-text-secondary">{config.label}</span>
+        <span className="text-[11px] text-text-muted font-mono">{label}</span>
       )}
     </span>
   );

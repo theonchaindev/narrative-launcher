@@ -1,77 +1,104 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { usePathname } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useDevWallets } from '@/lib/devWallet';
+import { shortenAddress } from '@/lib/utils';
+import { WalletManagerPanel } from '@/components/wallet/WalletManagerPanel';
 
 export function Nav() {
-  const [importing, setImporting] = useState(false);
-  const [importUrl, setImportUrl] = useState('');
+  const pathname = usePathname();
+  const [walletPanelOpen, setWalletPanelOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const { wallets, activeWallet } = useDevWallets();
+
+  useEffect(() => { setMounted(true); }, []);
+
+  const navLinks = [
+    { href: '/', label: 'Feed' },
+    { href: '/feed', label: 'Live Feed', live: true },
+    { href: '/explore', label: 'Explore' },
+  ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 h-16 border-b border-border bg-background/80 backdrop-blur-md">
-      <div className="max-w-7xl mx-auto h-full flex items-center justify-between px-4 sm:px-6">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="w-8 h-8 rounded-lg bg-accent-purple flex items-center justify-center text-white font-bold text-sm">
-            N
-          </div>
-          <span className="font-semibold text-text-primary hidden sm:block">
-            Narrative Launcher
-          </span>
-        </Link>
+    <>
+      <nav className="fixed top-0 left-0 right-0 z-40 h-14 border-b border-border bg-background/90 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto h-full flex items-center justify-between px-4 sm:px-6">
 
-        {/* Nav links */}
-        <div className="flex items-center gap-6 text-sm text-text-secondary">
-          <Link href="/" className="hover:text-text-primary transition-colors">
-            Feed
-          </Link>
-          <Link href="/explore" className="hover:text-text-primary transition-colors">
-            Explore
-          </Link>
-        </div>
-
-        {/* Actions */}
-        <div className="flex items-center gap-3">
-          {importing ? (
-            <div className="flex items-center gap-2">
-              <input
-                type="text"
-                value={importUrl}
-                onChange={(e) => setImportUrl(e.target.value)}
-                placeholder="Paste X post URL..."
-                className="h-9 w-64 rounded-lg bg-surface border border-border px-3 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-purple transition-colors"
-                autoFocus
-                onKeyDown={(e) => {
-                  if (e.key === 'Escape') {
-                    setImporting(false);
-                    setImportUrl('');
-                  }
-                  if (e.key === 'Enter' && importUrl) {
-                    window.location.href = `/?import=${encodeURIComponent(importUrl)}`;
-                  }
-                }}
-              />
-              <button
-                onClick={() => { setImporting(false); setImportUrl(''); }}
-                className="h-9 px-3 text-sm text-text-muted hover:text-text-primary transition-colors"
-              >
-                ✕
-              </button>
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2 shrink-0">
+            <div className="w-7 h-7 rounded-md bg-accent-green flex items-center justify-center text-black font-bold text-[10px] font-mono tracking-tight">
+              NL
             </div>
-          ) : (
-            <button
-              onClick={() => setImporting(true)}
-              className="h-9 px-4 rounded-lg bg-surface border border-border text-sm text-text-secondary hover:text-text-primary hover:border-accent-purple transition-all"
-            >
-              Import from X
-            </button>
-          )}
+            <span className="font-semibold text-text-primary text-sm hidden sm:block tracking-tight">
+              Narrative<span className="text-accent-green">.</span>Launch
+            </span>
+          </Link>
 
-          <button className="h-9 px-4 rounded-lg bg-accent-purple hover:bg-accent-purple-hover text-white text-sm font-medium transition-colors">
-            Connect Wallet
-          </button>
+          {/* Nav links */}
+          <div className="flex items-center gap-0.5">
+            {navLinks.map(({ href, label, live }) => {
+              const active = pathname === href;
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono transition-all ${
+                    active
+                      ? 'text-accent-green bg-accent-green-dim'
+                      : 'text-text-muted hover:text-text-secondary hover:bg-surface2'
+                  }`}
+                >
+                  {live && (
+                    <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${active ? 'bg-accent-green status-pulse' : 'bg-text-muted'}`} />
+                  )}
+                  {label}
+                </Link>
+              );
+            })}
+          </div>
+
+          {/* Dev wallet button */}
+          <div className="flex items-center">
+            {mounted && (
+              <button
+                onClick={() => setWalletPanelOpen(true)}
+                className={`h-8 flex items-center gap-2 px-3 rounded-lg border text-xs font-mono transition-all ${
+                  activeWallet
+                    ? 'border-accent-green-border bg-accent-green-dim text-accent-green hover:glow-green-sm'
+                    : 'border-border bg-surface2 text-text-muted hover:text-text-secondary hover:border-border-hover'
+                }`}
+              >
+                {activeWallet ? (
+                  <>
+                    <span className="live-dot" />
+                    <span className="hidden sm:inline max-w-[72px] truncate">{activeWallet.name}</span>
+                    <span className="text-[10px] opacity-60">{shortenAddress(activeWallet.publicKey, 3)}</span>
+                  </>
+                ) : (
+                  <>
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <path d="M12 5v14M5 12h14" strokeLinecap="round" />
+                    </svg>
+                    <span>Dev Wallet</span>
+                    {wallets.length > 0 && (
+                      <span className="ml-0.5 text-[9px] bg-surface border border-border rounded px-1 text-text-muted">
+                        {wallets.length}
+                      </span>
+                    )}
+                  </>
+                )}
+              </button>
+            )}
+          </div>
+
         </div>
-      </div>
-    </nav>
+      </nav>
+
+      {walletPanelOpen && (
+        <WalletManagerPanel onClose={() => setWalletPanelOpen(false)} />
+      )}
+    </>
   );
 }
