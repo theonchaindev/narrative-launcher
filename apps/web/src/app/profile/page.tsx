@@ -322,12 +322,15 @@ function WalletsSection() {
                 isActive={wallet.isActive}
                 isRenaming={renamingId === wallet.id}
                 renameValue={renameValue}
+                isConfirmingDelete={deleteConfirm === wallet.id}
                 onRenameChange={setRenameValue}
                 onStartRename={() => { setRenamingId(wallet.id); setRenameValue(wallet.name); }}
                 onCommitRename={commitRename}
                 onSetActive={() => setActive(wallet.id)}
                 onExport={() => startExport(wallet)}
                 onDelete={() => setDeleteConfirm(wallet.id)}
+                onConfirmDelete={() => { deleteWallet(wallet.id); setDeleteConfirm(null); }}
+                onCancelDelete={() => setDeleteConfirm(null)}
               />
             ))}
           </div>
@@ -406,32 +409,6 @@ function WalletsSection() {
         </Modal>
       )}
 
-      {/* Delete confirm */}
-      {deleteConfirm && (
-        <Modal onClose={() => setDeleteConfirm(null)}>
-          <h3 className="font-semibold text-text-primary mb-1 font-mono">Delete wallet?</h3>
-          <p className="text-sm font-mono text-text-secondary mb-1">
-            {wallets.find((w) => w.id === deleteConfirm)?.name}
-          </p>
-          <p className="text-xs text-accent-red mb-6">
-            Cannot be undone. Export your private key first if needed.
-          </p>
-          <div className="flex gap-3">
-            <button
-              onClick={() => setDeleteConfirm(null)}
-              className="flex-1 h-9 rounded-lg border border-border bg-surface2 text-xs font-mono text-text-muted hover:text-text-secondary transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={() => { deleteWallet(deleteConfirm); setDeleteConfirm(null); }}
-              className="flex-1 h-9 rounded-lg bg-accent-red/10 border border-accent-red/30 text-accent-red hover:bg-accent-red/20 text-xs font-mono font-bold transition-colors"
-            >
-              Delete
-            </button>
-          </div>
-        </Modal>
-      )}
     </>
   );
 }
@@ -442,6 +419,7 @@ interface WalletTableRowProps {
   wallet: DevWallet;
   isActive: boolean;
   isRenaming: boolean;
+  isConfirmingDelete: boolean;
   renameValue: string;
   onRenameChange: (v: string) => void;
   onStartRename: () => void;
@@ -449,11 +427,13 @@ interface WalletTableRowProps {
   onSetActive: () => void;
   onExport: () => void;
   onDelete: () => void;
+  onConfirmDelete: () => void;
+  onCancelDelete: () => void;
 }
 
 function WalletTableRow({
-  wallet, isActive, isRenaming, renameValue, onRenameChange,
-  onStartRename, onCommitRename, onSetActive, onExport, onDelete,
+  wallet, isActive, isRenaming, isConfirmingDelete, renameValue, onRenameChange,
+  onStartRename, onCommitRename, onSetActive, onExport, onDelete, onConfirmDelete, onCancelDelete,
 }: WalletTableRowProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -462,62 +442,91 @@ function WalletTableRow({
   }, [isRenaming]);
 
   return (
-    <div className={`grid grid-cols-[1fr_140px_80px_96px] gap-0 items-center px-4 py-3 transition-colors ${isActive ? 'bg-accent-green-dim' : 'hover:bg-surface2'}`}>
-      {/* Name */}
-      <div className="flex items-center gap-2 min-w-0">
-        {isActive && <span className="live-dot shrink-0" />}
-        {isRenaming ? (
-          <input
-            ref={inputRef}
-            value={renameValue}
-            onChange={(e) => onRenameChange(e.target.value)}
-            onBlur={onCommitRename}
-            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === 'Escape') onCommitRename(); }}
-            className="bg-transparent border-b border-accent-green-border text-sm font-mono text-text-primary focus:outline-none w-full"
-          />
-        ) : (
+    <div>
+      <div className={`grid grid-cols-[1fr_140px_80px_96px] gap-0 items-center px-4 py-3 transition-colors ${isActive ? 'bg-accent-green-dim' : 'hover:bg-surface2'}`}>
+        {/* Name */}
+        <div className="flex items-center gap-2 min-w-0">
+          {isActive && <span className="live-dot shrink-0" />}
+          {isRenaming ? (
+            <input
+              ref={inputRef}
+              value={renameValue}
+              onChange={(e) => onRenameChange(e.target.value)}
+              onBlur={onCommitRename}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === 'Escape') onCommitRename(); }}
+              className="bg-transparent border-b border-accent-green-border text-sm font-mono text-text-primary focus:outline-none w-full"
+            />
+          ) : (
+            <button
+              onClick={onStartRename}
+              title="Click to rename"
+              className={`text-sm font-mono font-semibold truncate hover:text-accent-green transition-colors ${isActive ? 'text-accent-green' : 'text-text-primary'}`}
+            >
+              {wallet.name}
+            </button>
+          )}
+        </div>
+        {/* Address */}
+        <span className="text-[10px] font-mono text-text-muted truncate pr-2">
+          {shortenAddress(wallet.publicKey, 5)}
+        </span>
+        {/* Balance (mock) */}
+        <span className="text-xs font-mono text-text-muted tabular-nums">0.00 SOL</span>
+        {/* Actions */}
+        <div className="flex items-center gap-1">
+          {!isActive && (
+            <button
+              onClick={onSetActive}
+              className="h-6 px-2 rounded bg-accent-green-dim border border-accent-green-border text-accent-green text-[10px] font-mono hover:bg-accent-green-border transition-colors"
+            >
+              Set active
+            </button>
+          )}
           <button
-            onClick={onStartRename}
-            title="Click to rename"
-            className={`text-sm font-mono font-semibold truncate hover:text-accent-green transition-colors ${isActive ? 'text-accent-green' : 'text-text-primary'}`}
+            onClick={onExport}
+            className="h-6 w-6 flex items-center justify-center rounded bg-surface2 border border-border text-text-muted hover:text-text-secondary transition-colors"
+            title="Export private key"
           >
-            {wallet.name}
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
           </button>
-        )}
-      </div>
-      {/* Address */}
-      <span className="text-[10px] font-mono text-text-muted truncate pr-2">
-        {shortenAddress(wallet.publicKey, 5)}
-      </span>
-      {/* Balance (mock) */}
-      <span className="text-xs font-mono text-text-muted tabular-nums">0.00 SOL</span>
-      {/* Actions */}
-      <div className="flex items-center gap-1">
-        {!isActive && (
           <button
-            onClick={onSetActive}
-            className="h-6 px-2 rounded bg-accent-green-dim border border-accent-green-border text-accent-green text-[10px] font-mono hover:bg-accent-green-border transition-colors"
+            onClick={isConfirmingDelete ? onCancelDelete : onDelete}
+            className={`h-6 w-6 flex items-center justify-center rounded transition-colors text-[10px] ${
+              isConfirmingDelete
+                ? 'bg-surface2 border border-border text-text-muted'
+                : 'bg-accent-red/5 border border-accent-red/20 text-accent-red hover:bg-accent-red/10'
+            }`}
+            title={isConfirmingDelete ? 'Cancel' : 'Delete wallet'}
           >
-            Set active
+            ✕
           </button>
-        )}
-        <button
-          onClick={onExport}
-          className="h-6 w-6 flex items-center justify-center rounded bg-surface2 border border-border text-text-muted hover:text-text-secondary transition-colors"
-          title="Export private key"
-        >
-          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </button>
-        <button
-          onClick={onDelete}
-          className="h-6 w-6 flex items-center justify-center rounded bg-accent-red/5 border border-accent-red/20 text-accent-red hover:bg-accent-red/10 transition-colors text-[10px]"
-          title="Delete wallet"
-        >
-          ✕
-        </button>
+        </div>
       </div>
+
+      {/* Inline delete confirmation */}
+      {isConfirmingDelete && (
+        <div className="flex items-center justify-between px-4 py-2.5 bg-accent-red/5 border-t border-accent-red/20">
+          <p className="text-[11px] font-mono text-accent-red">
+            Delete <span className="font-bold">{wallet.name}</span>? Cannot be undone.
+          </p>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={onCancelDelete}
+              className="h-6 px-3 rounded border border-border bg-surface2 text-[10px] font-mono text-text-muted hover:text-text-secondary transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={onConfirmDelete}
+              className="h-6 px-3 rounded bg-accent-red/10 border border-accent-red/30 text-accent-red hover:bg-accent-red/20 text-[10px] font-mono font-bold transition-colors"
+            >
+              Confirm delete
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
